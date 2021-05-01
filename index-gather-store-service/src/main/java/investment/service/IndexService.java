@@ -1,14 +1,14 @@
 package investment.service;
 
+import cn.hutool.core.collection.CollectionUtil;
+import investment.pojo.Index;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import investment.pojo.Index;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +19,7 @@ public class IndexService {
     @Resource
     RestTemplate restTemplate;
 
+
     public List<Index> fetch_indexes_from_third_part(){
         List<Map<String,String>> temp=
                 restTemplate.exchange(
@@ -26,7 +27,6 @@ public class IndexService {
                     HttpMethod.GET, null,
                     new ParameterizedTypeReference<List<Map<String,String>>>() {}
                 ).getBody();
-
         if(temp!=null){
             return map2Index(temp);
         }else
