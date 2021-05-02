@@ -2,6 +2,7 @@ package investment.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import investment.pojo.Index;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class IndexService {
     @Resource
     RestTemplate restTemplate;
 
-
+    @Cacheable(value = "all_codes",key="'all_codes'")
     public List<Index> fetch_indexes_from_third_part(){
         List<Map<String,String>> temp=
                 restTemplate.exchange(
