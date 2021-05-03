@@ -1,7 +1,10 @@
 package investment.service;
 
-import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.collection.CollUtil;
 import investment.pojo.Index;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -14,19 +17,32 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@CacheConfig(cacheNames="indexes")
 public class IndexService {
-    private List<Index> indexes;
 
     @Resource
     RestTemplate restTemplate;
 
-    @Cacheable(value = "all_codes",key="'all_codes'")
+    @CacheEvict(value = "all_codes", allEntries=true)
+    public void remove(){
+    }
+
+    @Cacheable(value = "all_codes", key="'all_codes'")
+    public List<Index> get(){
+        return CollUtil.toList();
+    }
+
+    @CachePut(value = "all_codes", key = "'all_codes'",unless = "#result[0].code=='000000'")
+    public List<Index> fresh() {
+        return fetch_indexes_from_third_part();
+    }
+
     public List<Index> fetch_indexes_from_third_part(){
         List<Map<String,String>> temp=
                 restTemplate.exchange(
-                    "http://127.0.0.1:8090/indexes/codes.json",
-                    HttpMethod.GET, null,
-                    new ParameterizedTypeReference<List<Map<String,String>>>() {}
+                        "http://127.0.0.1:8090/indexes/codes.json",
+                        HttpMethod.GET, null,
+                        new ParameterizedTypeReference<List<Map<String,String>>>() {}
                 ).getBody();
         if(temp!=null){
             return map2Index(temp);
