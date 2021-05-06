@@ -23,16 +23,16 @@ public class IndexService {
     @Resource
     RestTemplate restTemplate;
 
-    @CacheEvict(value = "all_codes", allEntries=true)
+    @CacheEvict(allEntries=true)
     public void remove(){
     }
 
-    @Cacheable(value = "all_codes", key="'all_codes'")
+    @Cacheable(key="'all_codes'")
     public List<Index> get(){
         return CollUtil.toList();
     }
 
-    @CachePut(value = "all_codes", key = "'all_codes'",unless = "#result[0].code=='000000'")
+    @CachePut(key = "'all_codes'",unless = "#result[0].code=='000000'")
     public List<Index> fresh() {
         return fetch_indexes_from_third_part();
     }
