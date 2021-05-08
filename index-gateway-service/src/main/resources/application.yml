@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          #是否与服务发现组件结合，通过服务ID进行转发到服务实例
+          enabled: true   #是否开启基于服务名称的路由转发规则
+          lower-case-service-id: true #将服务名称小写化
+      routes:
+        - id: api-codes
+          uri: lb://index-codes-service
+          predicates:
+            - Path=/**
